@@ -5,10 +5,9 @@ from app.utils.helpers import format_event
 
 bp = Blueprint('events', __name__)
 
-# create an event
-@bp.route('/events', methods=['POST'])
-def create_event():
-    user_id = request.json['user_id']
+# create an event for user
+@bp.route('/<int:user_id>/events', methods=['POST'])
+def create_event(user_id):
     description = request.json['description']
 
     # use .get to check if theyre None or not
