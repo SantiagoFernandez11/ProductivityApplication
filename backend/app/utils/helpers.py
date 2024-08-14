@@ -9,3 +9,12 @@ def format_event(event):
         'created_at': event.created_at,
         'updated_at': event.updated_at,
     }
+
+def format_user(user):
+    return {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'created_at': user.created_at,
+        'updated_at': user.updated_at
+    }
