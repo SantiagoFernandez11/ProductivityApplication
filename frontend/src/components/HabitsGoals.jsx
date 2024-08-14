@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { VStack, HStack, Text, Input, IconButton, List, ListItem, Spinner } from '@chakra-ui/react';
 import { FaPlus, FaTrash } from "react-icons/fa";
+import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../context/AuthContext';
 
 const EditableListItem = ({ item, onEdit, onDelete }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -97,89 +99,112 @@ const EditableList = ({ title, items, setItems, onAddItem, onDeleteItem, onEditI
 };
 
 const HabitsAndGoals = () => {
-	const [habits, setHabits] = useState([]);
-	const [goals, setGoals] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+    const [habits, setHabits] = useState([]);
+    const [goals, setGoals] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [userId, setUserId] = useState(null);
+	const { isAuthenticated, isLoading: authLoading } = useAuth();
 
-	const baseUrl = 'http://127.0.0.1:5000';
-	// CHANGE THIS with actual user id, maybe from auth context?
-	// need the process of login and knowing which user it is
-	const userId = 1;
+    const baseUrl = 'http://127.0.0.1:5000';
 
-	// Grab habits and goals from backend
-	const fetchEvents = async () => {
-		try {
-			setIsLoading(true);
-			const response = await axios.get(`${baseUrl}/${userId}/events`);
-			const events = response.data[`user ${userId} events`];
+	// Check if user is authenticated with jwt
+    useEffect(() => {
+        if (isAuthenticated) {
+            const token = localStorage.getItem('authToken');
+            const decodedToken = jwtDecode(token);
+            setUserId(decodedToken.sub);
+            
+            // axios default headers are already set in AuthContext, so you don't need to set them here
+        }
+    }, [isAuthenticated]);
 
-			const habitsData = events.filter(event => event.category === 'habit');
-			const goalsData = events.filter(event => event.category === 'goal');	  
-			setHabits(habitsData);
-			setGoals(goalsData);
-			setIsLoading(false);
-		} catch (err){
-			setError(`Failed to fetch events: ${err.message}`)
-			setIsLoading(false);
-		}
-	};
-
-	// Add an event
-	const addEvent = async (description, category) => {
-		try {
-			const response = await axios.post(`${baseUrl}/${userId}/events`, {
-				user_id: userId,
-				description,
-				category
-			})
-	
-			// refresh events list after successfully adding
-			if (response.status === 200) {
-				await fetchEvents();
-			}
-		} catch (err) {
-			setError(`Failed to add event: ${err.message}`)
-		}
-	}
-
-	// Delete an event
-	const deleteEvent = async (eventId) => {
-		try {
-			const response = await axios.delete(`${baseUrl}/${userId}/events/${eventId}`)
-
-			// refresh events list after successfully adding
-			if (response.status === 200) {
-				await fetchEvents();
-			}
-		} catch (err) {
-			setError(`Failed to delete event: ${err.message}`)
-		}
-	}
-
-	// Edit an event 
-	const editEvent = async (eventId, newDescription, category) => {
-		try {
-			const response = await axios.put(`${baseUrl}/${userId}/events/${eventId}`, {
-				description: newDescription,
-				category
-			})
+    // Grab habits and goals from backend
+    const fetchEvents = async () => {
+        if (!userId) return;
+        try {
+            setIsLoading(true);
 			
-			// refresh events list after successfully adding
-			if (response.status === 200) {
-				await fetchEvents();
-			}
-		} catch (err) {
-			setError(`Failed to edit event: ${err.message}`)
-		}
-	}
+			// Get events from backend
+            const response = await axios.get(`${baseUrl}/${userId}/events`);
 
-	useEffect(() => {
-		fetchEvents();
-	}, []);
+			// Set events
+            const events = response.data[`user ${userId} events`];
+            const habitsData = events.filter(event => event.category === 'habit');
+            const goalsData = events.filter(event => event.category === 'goal');    
+            setHabits(habitsData);
+            setGoals(goalsData);
+            setIsLoading(false);
+        } catch (err){
+            setError(`Failed to fetch events: ${err.message}`);
+            setIsLoading(false);
+        }
+    };
 
-	if (isLoading) return <Spinner />;
-	if (error) return <Text color="red.500">{error}</Text>;
+    // Add an event
+    const addEvent = async (description, category) => {
+        if (!userId) return;
+        try {
+			// post events into the backend
+            const response = await axios.post(`${baseUrl}/${userId}/events`, {
+                description,
+                category
+            })
+    
+            // refresh events list after successfully adding
+            if (response.status === 200) {
+                await fetchEvents();
+            }
+        } catch (err) {
+            setError(`Failed to add event: ${err.message}`)
+        }
+    }
+
+    // Delete an event
+    const deleteEvent = async (eventId) => {
+        if (!userId) return;
+        try {
+			// delete events from backend
+            const response = await axios.delete(`${baseUrl}/${userId}/events/${eventId}`)
+
+            // refresh events list after successfully deleting
+            if (response.status === 200) {
+                await fetchEvents();
+            }
+        } catch (err) {
+            setError(`Failed to delete event: ${err.message}`)
+        }
+    }
+
+    // Edit an event 
+    const editEvent = async (eventId, newDescription, category) => {
+        if (!userId) return;
+        try {
+			// edit an event from backend (only description)
+            const response = await axios.put(`${baseUrl}/${userId}/events/${eventId}`, {
+                description: newDescription,
+                category
+            })
+            
+            // refresh events list after successfully editing
+            if (response.status === 200) {
+                await fetchEvents();
+            }
+        } catch (err) {
+            setError(`Failed to edit event: ${err.message}`)
+        }
+    }
+
+    useEffect(() => {
+        if (userId) {
+            fetchEvents();
+        }
+    }, [userId]);
+
+    if (authLoading) return <Spinner />;
+    if (!isAuthenticated) return <Text>Please log in to view your habits and goals.</Text>;
+    if (isLoading) return <Spinner />;
+    if (error) return <Text color="red.500">{error}</Text>;
 
 	return (
 		<VStack align="stretch" spacing={6}>
