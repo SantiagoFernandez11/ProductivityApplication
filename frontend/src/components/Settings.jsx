@@ -7,7 +7,6 @@ const Settings = () => {
       <VStack spacing={4} align="stretch">
         <Heading size="lg">Settings</Heading>
         <Text>Adjust your application settings here. Customize your experience and manage your preferences.</Text>
-        {/* Add settings options here */}
       </VStack>
     </Box>
   );
