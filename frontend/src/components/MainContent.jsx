@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import Daily from './Daily';
 import Weekly from './Weekly';
 import Monthly from './Monthly';
-import { Box, Button, HStack } from '@chakra-ui/react';
+import { Box, Button, HStack, VStack } from '@chakra-ui/react';
 
 const MainContent = () => {
-  	const [currentView, setCurrentView] = useState('Monthly'); 
+	const [currentView, setCurrentView] = useState('Monthly'); 
 
 	const handleViewChange = (view) => {
 		setCurrentView(view);
 	};
 
 	return (
-		<Box flex={1} p={8}>
-			<HStack spacing={4} mb={4}>
+		<VStack flex={1} p={8} spacing={4} align="stretch" h="100vh">
+			<HStack spacing={4}>
 				<Button onClick={() => handleViewChange('Daily')} colorScheme={currentView === 'Daily' ? 'blue' : 'gray'}>
-				Daily
+					Daily
 				</Button>
 				<Button onClick={() => handleViewChange('Weekly')} colorScheme={currentView === 'Weekly' ? 'blue' : 'gray'}>
-				Weekly
+					Weekly
 				</Button>
 				<Button onClick={() => handleViewChange('Monthly')} colorScheme={currentView === 'Monthly' ? 'blue' : 'gray'}>
-				Monthly
+					Monthly
 				</Button>
 			</HStack>
-			<Box>
+			<Box flex={1}>
 				{currentView === 'Daily' && <Daily />}
 				{currentView === 'Weekly' && <Weekly />}
 				{currentView === 'Monthly' && <Monthly />}
 			</Box>
-		</Box>
+		</VStack>
 	);
 };
 
