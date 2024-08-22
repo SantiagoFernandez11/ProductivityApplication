@@ -27,10 +27,9 @@ const Sidebar = () => {
 	};
 
 	return (
-		<VStack bg="orange.50" w="450px" h="100%" align="stretch" spacing={4} position="relative">
+		<VStack w="450px" h="100%" align="stretch" spacing={4} position="relative">
 			<Box position="absolute" left={0} right={0} top={0}>
-				<HStack 
-					bg="orange.50" 
+				<HStack  
 					w="100%" 
 					h="70px" 
 					spacing={0}
@@ -46,7 +45,7 @@ const Sidebar = () => {
 						>
 							<IconButton
 								variant='ghost'
-								colorScheme={selectedIcon === label ? 'teal' : 'gray'}
+								colorScheme={selectedIcon === label ? 'blue' : 'gray'}
 								aria-label={label}
 								icon={<Icon size="24px" />}
 								h="100%"
