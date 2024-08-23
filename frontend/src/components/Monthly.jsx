@@ -1,66 +1,58 @@
 import React, { useState } from 'react';
-import { Box, Flex, Grid, Text, IconButton, VStack } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Grid, GridItem, Text } from '@chakra-ui/react';
+import { format, startOfMonth, endOfMonth, addDays } from 'date-fns';
+import CalendarLayout from './CalendarLayout';
 
 const Monthly = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
+  const monthYear = format(currentDate, 'MMMM yyyy');
+  const startDate = startOfMonth(currentDate);
+  const endDate = endOfMonth(currentDate);
+  const startDayOfWeek = startDate.getDay();
+
+  const handlePreviousMonth = () => {
+    setCurrentDate(prevDate => addDays(prevDate, -30)); // Approximate, adjust as needed
   };
 
-  const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)));
+  const handleNextMonth = () => {
+    setCurrentDate(prevDate => addDays(prevDate, 30)); // Approximate, adjust as needed
   };
 
-  const handleDayClick = (day) => {
-    console.log(`Clicked on day: ${day}`);
-    // Add logic here
-  };
-
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-  const days = Array.from({ length: 42 }, (_, i) => {
-    const day = i - firstDayOfMonth + 1;
-    return day > 0 && day <= daysInMonth ? day : null;
-  });
+  const days = [];
+  for (let i = 0; i < 42; i++) {
+    const day = addDays(startDate, i - startDayOfWeek);
+    days.push(day);
+  }
 
   return (
-    <VStack spacing={2} align="stretch" h="100%" w="100%">
-      <Flex justify="space-between" align="center" mb={2}>
-        <IconButton size="sm" icon={<ChevronLeftIcon />} onClick={prevMonth} aria-label="Previous month" />
-        <Text fontSize="xl" fontWeight="bold">
-          {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-        </Text>
-        <IconButton size="sm" icon={<ChevronRightIcon />} onClick={nextMonth} aria-label="Next month" />
-      </Flex>
-      <Grid templateColumns="repeat(7, 1fr)" templateRows="auto repeat(6, 1fr)" gap={1} flex={1}>
+    <CalendarLayout
+      title={monthYear}
+      onPrevious={handlePreviousMonth}
+      onNext={handleNextMonth}
+    >
+      <Grid templateColumns="repeat(7, 1fr)" templateRows="auto repeat(6, 1fr)" h="100%">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <Box key={day} textAlign="center" fontWeight="bold" fontSize="sm" py={1}>
+          <GridItem key={day} textAlign="center" fontWeight="bold" fontSize="sm" py={1}>
             {day}
-          </Box>
+          </GridItem>
         ))}
         {days.map((day, index) => (
-          <Box
+          <GridItem
             key={index}
             borderWidth={1}
-            borderRadius="md"
             p={2}
-            textAlign="left"
-            onClick={() => day && handleDayClick(day)}
-            cursor={day ? "pointer" : "default"}
-            bg={day ? "white" : "gray.50"}
-            _hover={day ? { bg: "gray.100" } : {}}
             position="relative"
-            height="100%"
+            opacity={day.getMonth() === currentDate.getMonth() ? 1 : 0.3}
           >
             <Text position="absolute" top={1} left={2} fontSize="sm">
-              {day}
+              {format(day, 'd')}
             </Text>
-          </Box>
+            {/* Add habit tracking elements here */}
+          </GridItem>
         ))}
       </Grid>
-    </VStack>
+    </CalendarLayout>
   );
 };
 
