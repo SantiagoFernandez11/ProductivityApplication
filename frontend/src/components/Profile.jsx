@@ -1,9 +1,13 @@
 import React from 'react';
-import { Box, VStack, HStack, Text, Avatar } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Avatar, Button, Flex } from '@chakra-ui/react';
+import { MdLogout } from "react-icons/md";
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
+  const { logout } = useAuth();
+
   return (
-    <Box p={5} maxWidth="100%" width="400px">
+    <Box p={5} maxWidth="100%" width="400px" position="relative" height="100%">
       <VStack spacing={4} align="stretch">
         <HStack spacing={4} align="center">
           <Avatar
@@ -19,6 +23,18 @@ const Profile = () => {
           </Box>
         </HStack>
       </VStack>
+      
+      <Flex position="absolute" bottom={5} right={5}>
+        <Button
+          leftIcon={<MdLogout />}
+          colorScheme="red"
+          variant="ghost"
+          size="sm"
+          onClick={logout}
+        >
+          Logout
+        </Button>
+      </Flex>
     </Box>
   );
 };
