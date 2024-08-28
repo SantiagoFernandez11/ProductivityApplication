@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { VStack, HStack, Box, Flex, IconButton } from '@chakra-ui/react';
 import { FaHome } from "react-icons/fa";
-import { MdAccountCircle, MdLogout } from "react-icons/md";
+import { MdAccountCircle } from "react-icons/md";
 import { FaNoteSticky } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
 import HabitsGoals from './HabitsGoals';
 import Profile from './Profile';
 import Projects from './Projects';
 import Settings from './Settings';
-import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
 	const [selectedIcon, setSelectedIcon] = useState('Home');
-	const { logout } = useAuth();
 
 	const icons = [
 		{ icon: FaHome, label: 'Home', component: HabitsGoals },
@@ -55,17 +53,6 @@ const Sidebar = () => {
 							/>
 						</Flex>
 					))}
-					<Flex flex={1} h="100%" alignItems="center" justifyContent="center">
-						<IconButton
-							variant='ghost'
-							colorScheme='gray'
-							icon={<MdLogout size="24px" />}
-							h='100%'
-							w='100%'
-							borderRadius={0}
-							onClick={logout}
-						/>
-					</Flex>
 				</HStack>
 			</Box>
 			<Box pt="80px" px={4} w="100%">
