@@ -43,13 +43,16 @@ const Sidebar = () => {
 						>
 							<IconButton
 								variant='ghost'
-								colorScheme={selectedIcon === label ? 'blue' : 'gray'}
+								color={selectedIcon === label ? 'blue.400' : 'gray.500'}
 								aria-label={label}
 								icon={<Icon size="24px" />}
 								h="100%"
 								w="100%"
 								borderRadius={0}
 								onClick={() => setSelectedIcon(label)}
+								_hover={{ bg: 'gray.100' }}
+								_active={{ bg: 'gray.200' }}
+								bg={selectedIcon === label ? 'gray.100' : 'transparent'}
 							/>
 						</Flex>
 					))}

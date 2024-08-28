@@ -44,10 +44,10 @@ const EditableList = ({ title, items, setItems, onAddItem, onDeleteItem, onEditI
                     size="sm"
                     border="none"
                     _focus={{ boxShadow: 'none' }}
-                    _placeholder={{ color: 'gray.400' }}
+                    _placeholder={{ color: 'blue.400' }}
                 />
                 <IconButton 
-                    icon={<FaPlus />} 
+                    icon={<FaPlus />}
                     onClick={addItem} 
                     aria-label={`Add ${title}`}
                     size="sm"

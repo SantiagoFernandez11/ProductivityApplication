@@ -81,7 +81,14 @@ const Projects = () => {
                   size="sm"
                   mr={2}
                 />
-                <Button type="submit" colorScheme="blue" size="sm">
+                <Button 
+                  type="submit" 
+                  bg="blue.400" 
+                  color="white" 
+                  size="sm" 
+                  _hover={{ bg: "blue.500" }}
+                  _active={{ bg: "blue.600" }}
+                >
                   Add Project
                 </Button>
               </Flex>
